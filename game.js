@@ -95,11 +95,11 @@
 			dx = -dx;
 		}
 
-		if (rightPressed) {
+		if (rightPressed && paddleX < canvas.width - paddleWidth) {
 			paddleX += 7;
 		}
 
-		if (leftPressed) {
+		if (leftPressed && paddleX > 0) {
 			paddleX -= 7;
 		}
 
