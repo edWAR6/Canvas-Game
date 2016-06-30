@@ -22,12 +22,24 @@
 	// ctx.stroke();
 	// ctx.closePath();
 
-	// Propiedades de control de movimiento
+	// Propiedades de movimiento
 	var x = canvas.width / 2;
 	var y = canvas.height -30;
 	var dx = 2;
 	var dy = -2;
 	var ballRadius = 10;
+
+	// Variables de la paleta
+	var paddleHeight = 10;
+	var paddleWidth = 75;
+	var paddleX = (canvas.height - paddleWidth)/2;
+
+	//Variables de control
+	var rightPressed = false;
+	var leftPressed = false;
+
+	document.addEventListener('keydown', keydownHandler, false);
+	document.addEventListener('keyup', keyupHandler, false);
 
 	function drawBall(){
 		ctx.beginPath();
@@ -37,10 +49,34 @@
 		ctx.closePath();
 	};
 
+	function drawPaddle(){
+		ctx.beginPath();
+		ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+		ctx.fillStyle = '#0095DD';
+		ctx.fill();
+		ctx.closePath();
+	}
+
+	function keydownHandler(e){
+		if (e.keyCode == 39) {
+			rightPressed = true;
+		}else if (e.keyCode == 37){
+			leftPressed = true;
+		}
+	}
+
+	function keyupHandler(e){
+		if (e.keyCode == 39) {
+			rightPressed = false;
+		}else if (e.keyCode == 37){
+			leftPressed = false;
+		}	
+	}
+
 	function draw(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		drawBall();
-
+		drawPaddle();
 		// Colisión top
 		// if (y + dy < 0) {
 		// 	dy = -dy;
@@ -56,15 +92,21 @@
 		}
 
 		if (x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
-			dx = -dx;	
+			dx = -dx;
 		}
 
+		if (rightPressed) {
+			paddleX += 7;
+		}
 
+		if (leftPressed) {
+			paddleX -= 7;
+		}
 
 		x += dx;
 		y += dy; 
 	};
-	setInterval(draw, 10);
+	setInterval(draw, 10);	
 
 }());
 
