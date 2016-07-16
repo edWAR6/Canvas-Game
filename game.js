@@ -38,6 +38,23 @@
 	var rightPressed = false;
 	var leftPressed = false;
 
+	// Variables de enemigos
+	var brickRowCount = 3;
+	var brickColumnCount = 5;
+	var brickWidth = 75;
+	var brickHeight = 20;
+	var brickPadding = 10;
+	var brickOffserTop = 30;
+	var brickOffserLeft = 30;
+
+	var bricks = [];
+	for (var c = 0; c < brickColumnCount; c++){
+		bricks[c] = [];
+		for (var r = 0; r < brickRowCount; r++){
+			bricks[c][r] = { x: 0, y: 0};
+		}
+	}
+
 	document.addEventListener('keydown', keydownHandler, false);
 	document.addEventListener('keyup', keyupHandler, false);
 
@@ -57,6 +74,22 @@
 		ctx.closePath();
 	}
 
+	function drawBricks(){
+		for(var c = 0; c < brickColumnCount; c++){
+			for(var r = 0; r < brickRowCount; r++){
+				var brickX = (c * (brickWidth + brickPadding)) + brickOffserLeft;
+				var brickY = (r * (brickHeight + brickPadding)) + brickOffserTop;
+				bricks[c][r].x = brickX;
+				bricks[c][r].y = brickY;
+				ctx.beginPath();
+				ctx.rect(brickX, brickY, brickWidth, brickHeight);
+				ctx.fillStyle = "#0095DD";
+				ctx.fill();
+				ctx.closePath();
+			}
+		}
+	}
+
 	function keydownHandler(e){
 		if (e.keyCode == 39) {
 			rightPressed = true;
@@ -73,10 +106,24 @@
 		}	
 	}
 
+	function collisionDetection(){
+		for(var c = 0; c < brickColumnCount; c++){
+			for(var r = 0; r < brickRowCount; r++){
+				var brick = bricks[c][r];
+				if (x > brick.x && x < brick.x + brickWidth && y > brick.y && y < brick.y + brickHeight){
+					dy = -dy;
+				}
+			}
+		}
+	}
+
 	function draw(){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		drawBricks();
 		drawBall();
 		drawPaddle();
+		collisionDetection();
+
 		// Colisión top
 		// if (y + dy < 0) {
 		// 	dy = -dy;
@@ -87,13 +134,24 @@
 		// 	dy = -dy;
 		// }
 
-		if (y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
-			dy = -dy;	
+		// if (y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+		// 	dy = -dy;	
+		// }
+
+		if (y + dy < ballRadius) {
+			dy = -dy;
+		} else if(y + dy > canvas.height - ballRadius) {
+			if (x > paddleX && x < paddleX + paddleWidth) {
+				dy = -dy;
+			}else{
+				alert("Game Over");
+				document.location.reload();
+			}			
 		}
 
 		if (x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
 			dx = -dx;
-		}
+		}		
 
 		if (rightPressed && paddleX < canvas.width - paddleWidth) {
 			paddleX += 7;
